@@ -8,6 +8,7 @@ from .views import (
     BoardMemberListAPIView,
     DetilImagesAPIView,
     SocialMediaLinkListAPIView,
+    PresidentAPIView,
 )
 
 urlpatterns = [
@@ -20,6 +21,9 @@ urlpatterns = [
     # Member Section
     path('member-types/', MemberTypeListAPIView.as_view(), name='member-types'),
     path('board-members/', BoardMemberListAPIView.as_view(), name='board-members'),
+    
+     path('president/', PresidentAPIView.as_view(), name='president-api'),
+
     path('social-links/', SocialMediaLinkListAPIView.as_view(), name='social-links'),
     path('detail-image/', DetilImagesAPIView.as_view(), name='detail-image'),
 ]

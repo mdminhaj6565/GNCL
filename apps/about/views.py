@@ -53,7 +53,29 @@ class AboutForHeritageListAPIView(APIView):
         })
 
 
-# ---------------- Member Section ----------------
+# Member Section
+
+class PresidentAPIView(APIView):
+
+    def get(self, request):
+        item = President.objects.first()
+
+        if not item:
+            return Response({
+                'status': 'error',
+                'message': 'No president data found',
+                'status_code': status.HTTP_404_NOT_FOUND,
+                'data': None
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = AboutPresidentSerializer(item)
+        return Response({
+            'status': 'success',
+            'message': 'President data fetched successfully',
+            'status_code': status.HTTP_200_OK,
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+
 class MemberTypeListAPIView(APIView):
     def get(self, request):
         items = MemberType.objects.all()

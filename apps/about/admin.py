@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.utils.html import mark_safe
 from .models import *
-
 # About Section
 @admin.register(AboutHero)
 class AboutHeroAdmin(admin.ModelAdmin):
@@ -51,6 +50,18 @@ class AboutForHeritageAdmin(admin.ModelAdmin):
 
 
 # Member Section
+class SocialMediaLinkInline(admin.TabularInline):
+    model = PresidentSocialMediaLink
+    extra = 1
+
+
+@admin.register(President)
+class PresidentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'designation', 'email')
+    search_fields = ('name', 'designation', 'email')
+    inlines = [SocialMediaLinkInline]
+
+
 @admin.register(MemberType)
 class MemberTypeAdmin(admin.ModelAdmin):
     list_display = ("id", "type_name")

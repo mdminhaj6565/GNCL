@@ -35,6 +35,25 @@ class AboutForHeritage(models.Model):
         return self.title
 
 
+class President(models.Model):
+    name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='about/president')
+    designation = models.CharField(max_length=150)
+    message = models.TextField()
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name
+
+
+class PresidentSocialMediaLink(models.Model):
+    president = models.ForeignKey(President,on_delete=models.CASCADE,related_name='social_links')
+    platform_name = models.CharField(max_length=50)
+    url = models.URLField()
+
+    def __str__(self):
+        return f"{self.platform_name} - {self.president.name}"
+
 # Member Section
 class MemberType(models.Model):
     TYPE_CHOICES = [

@@ -21,6 +21,29 @@ class AboutForHeritageSerializer(serializers.ModelSerializer):
         model = AboutForHeritage
         fields = '__all__'
 
+
+class SocialMediaLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PresidentSocialMediaLink
+        fields = ['platform_name', 'url']
+
+
+class AboutPresidentSerializer(serializers.ModelSerializer):
+    social_links = SocialMediaLinkSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = President
+        fields = [
+            'id',
+            'name',
+            'designation',
+            'email',
+            'message',
+            'image',
+            'social_links',
+        ]
+
+
 class MemberTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MemberType
