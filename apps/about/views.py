@@ -53,7 +53,7 @@ class AboutForHeritageListAPIView(APIView):
         })
 
 
-# Member Section
+
 
 class PresidentAPIView(APIView):
 

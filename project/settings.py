@@ -50,7 +50,11 @@ INSTALLED_APPS = [
     'apps.about',
     'apps.contact',
     'apps.events',
-    'apps.footer'
+    'apps.footer',
+    'apps.gym',
+    'apps.Salon',
+    'apps.lounges_party',
+    'apps.swimming_pool'
 ]
 
 
