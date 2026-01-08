@@ -13,10 +13,7 @@ urlpatterns = [
     path('api/contact/', include('apps.contact.urls')), 
     path('api/events/', include('apps.events.urls')), 
     path('api/footer/', include('apps.footer.urls')), 
-    path('api/health_&_gym/', include('apps.gym.urls')), 
-    path('api/Salon/', include('apps.Salon.urls')), 
-    path('api/lounges_party/', include('apps.lounges_party.urls')), 
-    path('api/swimming_pool/', include('apps.swimming_pool.urls')), 
+    path('api/facilities/', include('apps.facilities.urls')), 
     
 ]
 if settings.DEBUG:
