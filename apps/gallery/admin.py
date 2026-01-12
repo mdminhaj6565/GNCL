@@ -1,61 +1,139 @@
 from django.contrib import admin
 from .models import (
-    Moments , MomentImage,
-    Signature, SignatureImage,
-    Memories, MemoriesImage,
-    Dining, DiningImage
+    Gallery,
+    GalleryImage,
+    MembershipGallery,
+    ReservationGallery,
+    MenuGallery,GallerySection,
+    GallerySectionImage,
+    # ======================================
+    MembershipFineDining,MembershipLiveMusic,MembershipFineDiningSecond,
+    ReservationFineDining,ReservationLiveMusic,ReservationFineDiningSecond,
+    MenuFineDining,MenuLiveMusic,MenuFineDiningSecond
 )
 
 
-# Admin for Moments
-@admin.register(Moments)
-class MomentsAdmin(admin.ModelAdmin):
-    list_display = ('title', 'sub_title', 'created_at', 'updated_at')
-    search_fields = ('title', 'sub_title')
+class GalleryImageInline(admin.TabularInline):
+    model = GalleryImage
+    extra = 1
 
-# Admin for MomentImage
-@admin.register(MomentImage)
-class MomentImageAdmin(admin.ModelAdmin):
-    list_display = ('moments', 'moments_image', 'created_at')
-    search_fields = ('moments__title',)
-    list_filter = ('moments',)
+class BaseGalleryAdmin(admin.ModelAdmin):
+    inlines = [GalleryImageInline]
+    list_display = ("gallery_type", "is_active", "created_at")
+    ordering = ("-id",)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if hasattr(self, "gallery_type"):
+            return qs.filter(gallery_type=self.gallery_type)
+        return qs
 
+    def save_model(self, request, obj, form, change):
+        if hasattr(self, "gallery_type"):
+            obj.gallery_type = self.gallery_type
+        super().save_model(request, obj, form, change)
 
-# Signature Section Admin
-class SignatureImageInline(admin.TabularInline):
-    model = SignatureImage
-    fields = ['signature_image', 'created_at']
-    readonly_fields = ['created_at']
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if "gallery_type" in fields:
+            fields.remove("gallery_type")
+        return fields
 
+@admin.register(MembershipGallery)
+class MembershipGalleryAdmin(BaseGalleryAdmin):
+    gallery_type = "memberships"
 
-@admin.register(Signature)
-class SignatureAdmin(admin.ModelAdmin):
-    list_display = ['title', 'sub_title', 'created_at', 'updated_at']
-    inlines = [SignatureImageInline]
+@admin.register(ReservationGallery)
+class ReservationGalleryAdmin(BaseGalleryAdmin):
+    gallery_type = "reservation"
 
-
-# Memories Section Admin
-class MemoriesImageInline(admin.TabularInline):
-    model = MemoriesImage
-    fields = ['memories_image', 'created_at']
-    readonly_fields = ['created_at']
-
-
-@admin.register(Memories)
-class MemoriesAdmin(admin.ModelAdmin):
-    list_display = ['memories_title', 'memories_sub_title', 'created_at', 'updated_at']
-    inlines = [MemoriesImageInline]
+@admin.register(MenuGallery)
+class MenuGalleryAdmin(BaseGalleryAdmin):
+    gallery_type = "menu"
 
 
-# Dining Section Admin
-class DiningImageInline(admin.TabularInline):
-    model = DiningImage
-    fields = ['dining_image', 'created_at']
-    readonly_fields = ['created_at']
+
+# ==============
+class GallerySectionImageInline(admin.TabularInline):
+    model = GallerySectionImage
+    extra = 1
+
+class BaseGalleryAdmin(admin.ModelAdmin):
+    inlines = [GallerySectionImageInline]
+    list_display = ("page", "section_type", "is_active")
+
+    page = None
+    section_type = None
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(page=self.page, section_type=self.section_type)
+
+    def save_model(self, request, obj, form, change):
+        obj.page = self.page
+        obj.section_type = self.section_type
+        super().save_model(request, obj, form, change)
+
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        for f in ("page", "section_type"):
+            if f in fields:
+                fields.remove(f)
+        return fields
 
 
-@admin.register(Dining)
-class DiningAdmin(admin.ModelAdmin):
-    list_display = ['dining_title', 'dining_sub_title', 'created_at', 'updated_at']
-    inlines = [DiningImageInline]
+# ===== MEMBERSHIPS =====
+@admin.register(MembershipFineDining)
+class MFDA(BaseGalleryAdmin):
+    page = "memberships"
+    section_type = "fine_dining"
+
+
+@admin.register(MembershipLiveMusic)
+class MLMA(BaseGalleryAdmin):
+    page = "memberships"
+    section_type = "live_music"
+
+
+@admin.register(MembershipFineDiningSecond)
+class MFDSA(BaseGalleryAdmin):
+    page = "memberships"
+    section_type = "fine_dining_2"
+
+
+# ===== RESERVATION =====
+@admin.register(ReservationFineDining)
+class RFDA(BaseGalleryAdmin):
+    page = "reservation"
+    section_type = "fine_dining"
+
+
+@admin.register(ReservationLiveMusic)
+class RLMA(BaseGalleryAdmin):
+    page = "reservation"
+    section_type = "live_music"
+
+
+@admin.register(ReservationFineDiningSecond)
+class RFDSA(BaseGalleryAdmin):
+    page = "reservation"
+    section_type = "fine_dining_2"
+
+
+# ===== MENU =====
+@admin.register(MenuFineDining)
+class MFDA2(BaseGalleryAdmin):
+    page = "menu"
+    section_type = "fine_dining"
+
+
+@admin.register(MenuLiveMusic)
+class MLMA2(BaseGalleryAdmin):
+    page = "menu"
+    section_type = "live_music"
+
+
+@admin.register(MenuFineDiningSecond)
+class MFDSA2(BaseGalleryAdmin):
+    page = "menu"
+    section_type = "fine_dining_2"

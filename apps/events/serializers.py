@@ -1,35 +1,39 @@
 from rest_framework import serializers
-from .models import (
-     HeroSection, HeroImage, 
-     Events, EventsImage, 
-)
+from .models import EventHero, Event, EventImage
 
-
-# Hero Section Serializers
-class HeroImageSerializer(serializers.ModelSerializer):
+# Event Hero serializers section
+class EventHeroSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HeroImage
-        fields = ['id', 'image']
+        model = EventHero
+        fields = [
+            "id",
+            "hero_title",
+            "hero_description",
+            "hero_image",
+            "event_type",
+        ]
 
 
-class HeroSectionSerializer(serializers.ModelSerializer):
-    images = HeroImageSerializer(many=True, read_only=True)
 
+# Event serializers section
+class EventImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HeroSection
-        fields = ['id', 'title', 'description', 'background_image', 'images']
-        
-
-#events sections
-class EventsImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EventsImage
-        fields = ['id', 'images']
+        model = EventImage
+        fields = ["id", "image"]
 
 
-class EventsSerializer(serializers.ModelSerializer):
-    images = EventsImageSerializer(source='eventsimage_set', many=True, read_only=True)
+class EventSerializer(serializers.ModelSerializer):
+    images = EventImageSerializer(many=True, read_only=True)
 
     class Meta:
-        model = Events
-        fields = ['id', 'title', 'sub_title', 'date', 'images']
+        model = Event
+        fields = [
+            "id",
+            "title",
+            "description",
+            "event_type",
+            "event_date",
+            "is_active",
+            "images",
+            "created_at",
+        ]

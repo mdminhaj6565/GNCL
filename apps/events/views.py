@@ -1,71 +1,122 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.template.context_processors import request
 from rest_framework import status
-import datetime
-from .models import (
-    HeroSection, Events, 
-)
 
-from .serializers import (
-    HeroImageSerializer,HeroSectionSerializer,
-    EventsSerializer,
-)
-# Create your views here.
+from .models import Event,EventHero
+from .serializers import EventSerializer,EventHeroSerializer
 
 
-# Hero Section API
-class HeroSectionListAPIView(APIView):
+
+class BaseEventHeroAPIView(APIView):
+    event_type = None
+
     def get(self, request):
-        heroes = HeroSection.objects.all()
-        serializer = HeroSectionSerializer(heroes, many=True)
+        hero = (
+            EventHero.objects
+            .filter(
+                event_type=self.event_type,
+                is_active=True
+            )
+            .order_by("-created_at")
+            .first()
+        )
 
-        return Response({
-            'status': 'success',
-            'message': 'Hero sections fetched successfully',
-            'status_code': status.HTTP_200_OK,
-            'data': serializer.data
-        }, status=status.HTTP_200_OK)
-    
+        if not hero:
+            return Response(
+                {"message": "Hero not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-class EventsListView(APIView):
-    def get(self, request):
-        filter_type = request.query_params.get('type')
-        today = datetime.date.today()
+        serializer = EventHeroSerializer(hero)
+        return Response(
+            {
+                "status": "success",
+                "event_type": self.event_type,
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
 
-        if filter_type == 'past':
-            obj = Events.objects.filter(date__lt=today)
 
-        elif filter_type == 'future':
-            obj = Events.objects.filter(date__gt=today)
+class RunningEventHeroAPIView(BaseEventHeroAPIView):
+    event_type = "running"
 
-        elif filter_type == 'all':
-            obj = Events.objects.all()
 
-        else:
-            obj = Events.objects.filter(date=today)
+class UpcomingEventHeroAPIView(BaseEventHeroAPIView):
+    event_type = "upcoming"
 
-        serializer = EventsSerializer(obj, many=True)
-        return Response({
-            "status": "success",
-            "status_code": status.HTTP_200_OK,
-            "message": "Events fetched successfully.",
-            "data": serializer.data
-        })
 
- # Only past events
-class EventsImagesView(APIView):
-    def get(self, request):
-        today = datetime.date.today()
+class PastEventHeroAPIView(BaseEventHeroAPIView):
+    event_type = "past"
 
-        past_events = Events.objects.filter(date__lt=today)
 
-        serializer = EventsSerializer(past_events, many=True)
 
-        return Response({
-            "status": "success",
-            "status_code": status.HTTP_200_OK,
-            "message": "Past event images fetched successfully.",
-            "data": serializer.data
-        })
+class BaseEventAPIView(APIView):
+
+    event_type = None
+
+    def get_queryset(self):
+        if not self.event_type:
+            return Event.objects.none()
+
+        return (
+            Event.objects
+            .filter(
+                event_type=self.event_type,
+                is_active=True
+            )
+            .prefetch_related("images")
+            .order_by("-created_at")
+        )
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = EventSerializer(queryset, many=True)
+
+        return Response(
+            {
+                "status": "success",
+                "section": self.event_type,
+                'message': 'Event data fetched successfully',
+                "count": queryset.count(),
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# ===== EVENT STATUS APIs =====
+class RunningEventAPIView(BaseEventAPIView):
+    event_type = "running"
+
+
+class UpcomingEventAPIView(BaseEventAPIView):
+    event_type = "upcoming"
+
+class PastEventAPIView(BaseEventAPIView):
+    event_type = "past"
+
+class PastEventPhotoAPIView(BaseEventAPIView):
+    event_type = "past_photo"
+
+
+class CompletedEventAPIView(BaseEventAPIView):
+    event_type = "completed"
+
+
+# ===== EXPERIENCE SECTION APIs =====
+class FineDiningAPIView(BaseEventAPIView):
+    event_type = "fine_dining"
+
+
+class LiveMusicAPIView(BaseEventAPIView):
+    event_type = "live_music"
+
+
+class FineDiningSecondAPIView(BaseEventAPIView):
+    event_type = "fine_dining_2"
+
+
+# ===== GALLERY API =====
+class EventGalleryAPIView(BaseEventAPIView):
+    event_type = "gallery"

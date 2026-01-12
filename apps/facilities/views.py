@@ -21,8 +21,14 @@ class BasePlaceAPIView(APIView):
             )
 
         serializer = PlaceDetailSerializer(place)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
+        return Response({
+            'status': 'success',
+            'status_code': status.HTTP_200_OK,
+            "section": self.place_type,
+            'message': 'facilities data fetched successfully',
+            'data': serializer.data
+        })
 
 class Healthcare_gymAPIView(BasePlaceAPIView):
     place_type = "healthcare_gym"

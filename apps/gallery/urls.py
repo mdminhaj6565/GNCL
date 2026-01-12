@@ -1,24 +1,40 @@
 from django.urls import path
 from .views import (
-    MomentImageListAPIView, MomentsListAPIView,
-    SignatureAPIView, SignatureImageAPIView,
-    MemoriesAPIView, MemoriesImagesAPIView,
-   DiningAPIView,DiningImagesAPIView,
+    MembershipGalleryAPIView,
+    ReservationGalleryAPIView,
+    MenuGalleryAPIView,
+    # ===== FINE DINING =====
+    MembershipFineDiningAPIView,
+    ReservationFineDiningAPIView,
+    MenuFineDiningAPIView,
+
+    # ===== FINE DINING =====
+    MembershipLiveMusicAPIView,
+    ReservationLiveMusicAPIView,
+    MenuLiveMusicAPIView,
+    # ===== FINE DINING SECOND =====
+    MembershipFineDiningSecondAPIView,
+    ReservationFineDiningSecondAPIView,
+    MenuFineDiningSecondAPIView
 )
 
 urlpatterns = [
-    path('moments/', MomentsListAPIView.as_view(), name='moments-list'),
-    path('moment-images/', MomentImageListAPIView.as_view(), name='moment-images-list'),
+    path("memberships/", MembershipGalleryAPIView.as_view()),
+    path("reservation/", ReservationGalleryAPIView.as_view()),
+    path("menu/", MenuGalleryAPIView.as_view()),
 
+    # ===== FINE DINING =====
+    path("memberships/fine-dining/",MembershipFineDiningAPIView.as_view()),
+    path("reservation/fine-dining/",ReservationFineDiningAPIView.as_view()),
+    path("menu/fine-dining/",MenuFineDiningAPIView.as_view()),
 
-    path('signatures/', SignatureAPIView.as_view(), name='signature-list'),
-    path('signature/', SignatureImageAPIView.as_view(), name='signature-detail'),
+    # ===== FINE DINING =====
+    path("memberships/live-music/",MembershipLiveMusicAPIView.as_view()),
+    path("reservation/live-music/",ReservationLiveMusicAPIView.as_view()),
+    path("menu/live-music/",MenuLiveMusicAPIView.as_view()),
 
-
-    path('memories/', MemoriesAPIView.as_view(), name='memories-list'),
-    path('memorie/', MemoriesImagesAPIView.as_view(), name='memories-detail'),
-
-    path('dining-images/', DiningAPIView.as_view(), name='dining-image-list'),
-    path('dining-images/<int:pk>/', DiningImagesAPIView.as_view(), name='dining-image-detail'), 
-
+    # ===== FINE DINING SECOND =====
+    path("memberships/fine-dining-second/",MembershipFineDiningSecondAPIView.as_view()),
+    path("reservation/fine-dining-second/",ReservationFineDiningSecondAPIView.as_view()),
+    path("menu/fine-dining-second/",MenuFineDiningSecondAPIView.as_view()),
 ]
